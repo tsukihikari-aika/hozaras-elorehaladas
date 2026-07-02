@@ -27,8 +27,26 @@ Hózárás előrehaladás
 		}
 	
 	.cim-kepek {
-		width: 40px;
-		height: 40px;
+		}
+		
+	.bal-kep {
+		position: absolute;
+		
+		top: 20px;
+		left: 20px;
+		
+		width: 100px;
+		height: 100px;
+		}
+	
+	.jobb-kep {
+		position: absolute;
+		
+		top: 20px;
+		right: 20px;
+		
+		width: 100px;
+		height: 100px;
 		}
 		
 	.toolbar {
@@ -59,6 +77,8 @@ Hózárás előrehaladás
 		}
 				
 	.container {
+		position: relative;
+		
 		min-width: 650px;
 		max-width: 700px;
 		
@@ -104,12 +124,16 @@ Hózárás előrehaladás
 <div class="container">
 
 	<div class="cim">
-	
-		<img src="busy.png" class="cim-kepek">
 		
 		<h1> Hózárás előrehaladás </h1>
 		
-		<img src="almost-done.png" class="cim-kepek">
+	</div>
+	
+	<div class="cim-kepek">
+		
+		<img src="busy.png" class="bal-kep">
+		
+		<img src="almost-done.png" class="jobb-kep">
 		
 	</div>
 	
@@ -118,7 +142,7 @@ Hózárás előrehaladás
 			<div id="progress-bar"></div>
 		</div>
 		
-		<span id="progress-text">0 / 28 kész (0%)</span>
+		<span id="progress-text"> Betöltés... </span>
 	</div>
 	
 		<br>
