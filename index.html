@@ -1,0 +1,249 @@
+<!doctype html>
+<html>
+<head>
+
+<link rel = "icon" type = "image/png" href = favicon.png">
+
+<title>
+Hózárás előrehaladás
+</title>
+
+<style>
+	body {
+		font-family: Arial;
+		}
+	.cim {
+		text-align: center;
+		}
+	.toolbar {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 15px;
+		margin-bottom: 15px;
+		}
+	.progress-container {
+		width: 250px;
+		height: 20px;
+		
+		border: 1px solid #999;
+		border-radius: 10px;
+		
+		overflow: hidden;
+		}
+	#progress-bar {
+		width: 0%;
+		height: 100%;
+		
+		background-color: #4caf50;
+		
+		transition: width 0.3s;
+		}
+	#mentesInfo {
+		padding: 10px;
+		
+		background-color: #f5f5f5;
+		
+		border: 1px solid #cccccc;
+		border-radius: 8px;
+		}
+	#masolva {
+		display:none;
+		
+		color:green;
+		font-weight: bold;
+				
+		margin-left:10px;
+		}
+	.container {
+		min-width: 650px;
+		max-width: 700px;
+		
+		margin: 20px auto;
+		padding: 20px;
+		
+		background: #FFFFFF;
+		border: 1px solid #cccccc;
+		border-radius: 10px;
+		
+		box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+		}
+	.folyamatban {
+		background-color: #ffd966;
+		}
+	.kesz {
+		background-color: #b6d7a8;
+		}
+	.megsem {
+		background-color: #FFFFFF;
+		}
+	li {
+		font-weight: bold;
+		padding: 4px;
+		margin: 4px 0;
+		border-radius: 5px;
+		}
+	button {
+		margin-left: 5px;
+		}
+	h2 {
+		font-weight: bold;
+		}
+	
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+	<div class="cim">
+		<h1> Hózárás előrehaladás </h1>
+	</div>
+	<div class="toolbar">
+		<div class="progress-container">
+			<div id="progress-bar"></div>
+		</div>
+		
+		<span id="progress-text">0 / 28 kész (0%)</span>
+	</div>
+	
+		<br>
+	<div class="lista">
+		<ul id="taskLista">
+			
+		</ul>
+	</div>
+	<br><br><br>
+	<div class="visszaallitas" style="text-align:center;">
+		<button onclick="visszaallit()"
+			style="
+				font-size:9px;
+				color:#999;
+				margin-top:30px;
+				">
+			Lista visszaállítása
+		</button>
+	</div>
+</div>
+
+<script src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+	const supabaseUrl = "https://fgqtddzmggjdxlfsvufc.supabase.co";
+	const supabaseKey = "sb_publishable_xf80MZPSOCJXBgGI-qKApA_wx7mLWJi";
+	const sb = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+	async function betoltFeladatok() {
+		
+		const {data, error}=await sb
+			.from("tasks")
+			.select("*")
+			.order("id");
+			
+		if (error) {
+			console.error(error);
+			return;
+		}
+		
+		console.table(data);
+		
+		const lista = document.getElementById("taskLista");
+		
+		lista.innerHTML = "";
+
+		data.forEach(function(task) {
+
+				let ujLi = document.createElement("li");
+				
+				ujLi.innerHTML = `
+					${task.title}
+					<button onclick = "statusValtas(this, 'folyamatban')"> folyamatban </button>
+					<button onclick = "statusValtas(this, 'kesz')"> kész </button>
+					<button onclick = "statusValtas(this, 'megsem')"> mégsem </button>
+					`;
+				
+				ujLi.dataset.task = task.name;
+				
+				lista.appendChild(ujLi);
+		
+				if (task.status === "folyamatban") {
+						ujLi.classList.add("folyamatban");
+
+					} else if (task.status === "kesz") {
+						ujLi.classList.add("kesz");
+				}
+		});
+	}
+	
+	function frissitProgress() {
+
+		let osszes = document.querySelectorAll("li").length;
+		
+		let kesz = document.querySelectorAll("li.kesz").length;
+		
+		let szazalek = Math.round((kesz / osszes) * 100);
+		
+		document.getElementById("progress-bar").style.width = szazalek + "%";
+		
+		document.getElementById("progress-text").innerText = kesz + " / " + osszes + " kész (" + szazalek + "%)";
+		}
+	
+	async function statusValtas(button, ujStatusz) {
+
+   		const line = button.parentElement;
+
+    	const taskName = line.dataset.task;
+
+    	const { error } = await sb
+       		.from("tasks")
+			.update({ status: ujStatusz })
+        	.eq("name", taskName);
+
+    	if (error) {
+        	console.error(error);
+        	return;
+    	}
+
+    	await betoltFeladatok();
+
+    	frissitProgress();
+	}
+	
+	setInterval(function() {
+		
+		betoltFeladatok();
+		frissitProgress();
+		}, 500);
+	
+	async function visszaallit() {
+		
+		if (!confirm("Biztosan vissza szeretnéd állítani az összes elemet?")) {
+			return;
+			}
+		
+		const { error } = await sb
+			.from("tasks")
+			.update({ status: "megsem" })
+			.neq("id", 0);
+
+		if (error) {
+				console.error(error);
+				return;
+			}
+		
+		await betoltFeladatok();
+		
+		frissitProgress();
+		
+		}
+	
+	frissitProgress();
+	betoltFeladatok();
+	
+</script>
+
+</body>
+
+</html>
