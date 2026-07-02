@@ -2,19 +2,35 @@
 <html>
 <head>
 
-<link rel = "icon" type = "image/ico" href = "favicon.ico">
+<link rel = "icon" href = "favicon.ico">
 
 <title>
 Hózárás előrehaladás
 </title>
 
 <style>
+
 	body {
 		font-family: Arial;
 		}
+		
 	.cim {
-		text-align: center;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-weight: bold;
+		gap: 15px;
 		}
+	
+	.cim h1 {
+		margin: 0;
+		}
+	
+	.cim-kepek {
+		width: 40px;
+		height: 40px;
+		}
+		
 	.toolbar {
 		display: flex;
 		justify-content: center;
@@ -22,6 +38,7 @@ Hózárás előrehaladás
 		gap: 15px;
 		margin-bottom: 15px;
 		}
+		
 	.progress-container {
 		width: 250px;
 		height: 20px;
@@ -31,6 +48,7 @@ Hózárás előrehaladás
 		
 		overflow: hidden;
 		}
+		
 	#progress-bar {
 		width: 0%;
 		height: 100%;
@@ -39,22 +57,7 @@ Hózárás előrehaladás
 		
 		transition: width 0.3s;
 		}
-	#mentesInfo {
-		padding: 10px;
-		
-		background-color: #f5f5f5;
-		
-		border: 1px solid #cccccc;
-		border-radius: 8px;
-		}
-	#masolva {
-		display:none;
-		
-		color:green;
-		font-weight: bold;
 				
-		margin-left:10px;
-		}
 	.container {
 		min-width: 650px;
 		max-width: 700px;
@@ -68,26 +71,28 @@ Hózárás előrehaladás
 		
 		box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 		}
+		
 	.folyamatban {
 		background-color: #ffd966;
 		}
+		
 	.kesz {
 		background-color: #b6d7a8;
 		}
+		
 	.megsem {
 		background-color: #FFFFFF;
 		}
+		
 	li {
 		font-weight: bold;
 		padding: 4px;
 		margin: 4px 0;
 		border-radius: 5px;
 		}
+		
 	button {
 		margin-left: 5px;
-		}
-	h2 {
-		font-weight: bold;
 		}
 	
 </style>
@@ -97,9 +102,17 @@ Hózárás előrehaladás
 <body>
 
 <div class="container">
+
 	<div class="cim">
+	
+		<img src="busy.png" class="cim-kepek">
+		
 		<h1> Hózárás előrehaladás </h1>
+		
+		<img src="almost-done.png" class="cim-kepek">
+		
 	</div>
+	
 	<div class="toolbar">
 		<div class="progress-container">
 			<div id="progress-bar"></div>
@@ -114,7 +127,9 @@ Hózárás előrehaladás
 			
 		</ul>
 	</div>
+	
 	<br><br><br>
+	
 	<div class="visszaallitas" style="text-align:center;">
 		<button onclick="visszaallit()"
 			style="
@@ -125,6 +140,7 @@ Hózárás előrehaladás
 			Lista visszaállítása
 		</button>
 	</div>
+	
 </div>
 
 <script src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
