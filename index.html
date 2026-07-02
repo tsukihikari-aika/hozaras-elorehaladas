@@ -180,7 +180,7 @@ Hózárás előrehaladás
 		const {data, error}=await sb
 			.from("tasks")
 			.select("*")
-			.order("id");
+			.order("sort_order");
 			
 		if (error) {
 			console.error(error);
