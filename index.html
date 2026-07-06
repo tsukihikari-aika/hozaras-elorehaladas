@@ -13,6 +13,7 @@ Hózárás előrehaladás
 	body {
 		font-family: Arial;
 		color: #3A2C23;
+		background: #F7F3EE;
 		}
 		
 	.cim {
@@ -72,16 +73,24 @@ Hózárás előrehaladás
 		width: 0%;
 		height: 100%;
 		
-		background-color: #4caf50;
+		background-color: #C7E3BB;
 		
 		transition: width 0.3s;
 		}
-				
+	
+	#last-update {
+		text-align: center;
+		font-size: 13px;
+		color: #7A675B;
+		margin-top: 4px;
+		margin-bottom: 10px;
+	}
+		
 	.container {
 		position: relative;
 		
-		min-width: 650px;
-		max-width: 700px;
+		min-width: 700px;
+		max-width: 750px;
 		
 		margin: 20px auto;
 		padding: 20px;
@@ -104,7 +113,17 @@ Hózárás előrehaladás
 	.megsem {
 		background-color: #FFFCF8;
 		}
-		
+	
+	.visszaallitas {
+		text-align: center;
+		margin-top: 30px;
+		}
+	
+	.visszaallitas button {
+		font-size: 9px;
+		color: #999;
+	}
+
 	li {
 		font-weight: bold;
 		padding: 4px;
@@ -127,6 +146,13 @@ Hózárás előrehaladás
 		background-color: #F6F0E8;
 		color: #3A2C23;
 		}
+
+	.statusTime {
+		margin-left: 10px;
+		font-size: 10px;
+		color: #7A675B;
+		font-weight: normal;
+	}
 	
 </style>
 
@@ -158,6 +184,8 @@ Hózárás előrehaladás
 		<span id="progress-text"> Betöltés... </span>
 	</div>
 	
+	<div id="last-update"> </div>
+
 		<br>
 	<div class="lista">
 		<ul id="taskLista">
@@ -167,13 +195,8 @@ Hózárás előrehaladás
 	
 	<br><br><br>
 	
-	<div class="visszaallitas" style="text-align:center;">
-		<button onclick="visszaallit()"
-			style="
-				font-size:9px;
-				color:#999;
-				margin-top:30px;
-				">
+	<div class="visszaallitas">
+		<button onclick="visszaallit()">
 			Lista visszaállítása
 		</button>
 	</div>
@@ -218,85 +241,138 @@ Hózárás előrehaladás
 
 		data.forEach(function(task) {
 
-				let ujLi = document.createElement("li");
+			const ujLi = document.createElement("li");
 				
-				ujLi.innerHTML = `
-					${task.title}
-					<button onclick = "statusValtas(this, 'folyamatban')"> folyamatban </button>
-					<button onclick = "statusValtas(this, 'kesz')"> kész </button>
-					<button onclick = "statusValtas(this, 'megsem')"> mégsem </button>
-					<select class = "userSelect"></select>
-					`;
+			ujLi.innerHTML = `
+				${task.title}
+				<button onclick = "statusValtas(this, 'folyamatban')"> folyamatban </button>
+				<button onclick = "statusValtas(this, 'kesz')"> kész </button>
+				<button onclick = "statusValtas(this, 'megsem')"> mégsem </button>
+				<select class = "userSelect"></select>
+				<span class= "statusTime"></span>
+				`;
 				
-				ujLi.dataset.task = task.name;
+			ujLi.dataset.task = task.name;
 				
-				const select = ujLi.querySelector(".userSelect");
-				
-				users.forEach(function(user) {
-					
-					let option = document.createElement ("option");
-					
-					option.value = user.id;
-					
-					option.textContent = user.display_name;
-					
-					select.appendChild(option);
-					
-				});
-				
-				select.value = task.assigned_to;
-				
-				select.dataset.task = task.name;
-				
-				select.addEventListener("change", function () {
-				
-					felhasznaloValtas(select);
-				
-				});
-				
-				lista.appendChild(ujLi);
-				
-				if (task.name === nyitandoTask) {
-					
-					if (typeof select.showPicker === "function") {
-						select.showPicker();
-					} else {
-						select.focus();
-					}
-					
-					nyitandoTask = null;
-					
-				}
-				
-				if (task.status === "folyamatban") {
-						ujLi.classList.add("folyamatban");
+			const select = ujLi.querySelector(".userSelect");
 
-					} else if (task.status === "kesz") {
-						ujLi.classList.add("kesz");
+			const statusTime =ujLi.querySelector(".statusTime");
+				
+			users.forEach(function(user) {
+					
+				const option = document.createElement ("option");
+					
+				option.value = user.id;
+					
+				option.textContent = user.display_name;
+					
+				select.appendChild(option);
+					
+			});
+				
+			select.value = task.assigned_to;
+				
+			select.dataset.task = task.name;
+				
+			select.addEventListener("change", function () {
+				
+				felhasznaloValtas(select);
+				
+			});
+				
+			if (task.status_time) {
+				statusTime.textContent = formatDatum(task.status_time);
+			}
+
+			lista.appendChild(ujLi);
+				
+			if (task.name === nyitandoTask) {
+					
+				if (typeof select.showPicker === "function") {
+					select.showPicker();
+				} else {
+					select.focus();
 				}
+					
+				nyitandoTask = null;
+					
+			}
+				
+			if (task.status === "folyamatban") {
+					ujLi.classList.add("folyamatban");
+
+				} else if (task.status === "kesz") {
+					ujLi.classList.add("kesz");
+			}
 		});
+		
+		const legfrissebb = data.reduce((max, task) => {
+		
+			if (!task.status_time) return max;
+		
+			if (!max) return task.status_time;
+
+			return task.status_time > max
+				? task.status_time
+				: max;
+		}, null);
+
+		if (legfrissebb) {
+
+			document.getElementById("last-update").textContent =
+				"Utolsó módosítás: " + formatDatum(legfrissebb);
+
+		} else {
+			
+			document.getElementById("last-update").textContent = "";
+
+		}
+
 	}
-	
+
+	// UTC időpont átalakítása helyi időre
+	function formatDatum(datum) {
+
+		if (!datum) {
+			return "";
+		}
+
+		const d = new Date(datum);
+
+		const ev = d.getFullYear();
+		const honap = String(d.getMonth() + 1).padStart(2, "0");
+		const nap = String(d.getDate()).padStart(2, "0");
+
+		const ora = String(d.getHours()).padStart(2, "0");
+		const perc = String(d.getMinutes()).padStart(2, "0");
+		const masodperc = String(d.getSeconds()).padStart(2, "0");
+
+		return `${ev}.${honap}.${nap}. ${ora}:${perc}:${masodperc}`;
+
+	}
+
 	function frissitProgress() {
 
 		let osszes = document.querySelectorAll("li").length;
 		
 		let kesz = document.querySelectorAll("li.kesz").length;
 		
-		let szazalek = Math.round((kesz / osszes) * 100);
+		let szazalek = 0
+			
+		if (osszes > 0) {
+			szazalek = Math.round((kesz / osszes) * 100);
+		}
 		
 		document.getElementById("progress-bar").style.width = szazalek + "%";
 		
 		document.getElementById("progress-text").innerText = kesz + " / " + osszes + " kész (" + szazalek + "%)";
-		}
+	}
 	
 	async function statusValtas(button, ujStatusz) {
-		
-		console.log("statusValtas elindult");
-		
-   		const line = button.parentElement;
+				
+   		const taskElement = button.parentElement;
 
-    	const taskName = line.dataset.task;
+		const taskName = taskElement.dataset.task;
 		
 		if (ujStatusz !== "megsem") {
 			nyitandoTask = taskName;
@@ -305,11 +381,13 @@ Hózárás előrehaladás
 		}
 		
 		let updateData = {
-			status: ujStatusz
+			status: ujStatusz,
+			status_time: new Date().toISOString()
 		};
 		
 		if (ujStatusz === "megsem") {
 			updateData.assigned_to = 0;
+			updateData.status_time = null;
 		}
 		
     	const { error } = await sb
@@ -317,24 +395,17 @@ Hózárás előrehaladás
 			.update(updateData)
         	.eq("name", taskName);
 		
-		console.log("Update error:", error);
-		console.log("nyitandó:", nyitandoTask);
-
     	if (error) {
         	console.error(error);
         	return;
     	}
 		
-		await betoltFeladatok();
-
-		frissitProgress();
+		await frissitOldal();
 
 	}
 	
 	async function felhasznaloValtas(select) {
-			
-		console.log("felhasznaloValtas elindult");
-		
+					
 		const taskName = select.dataset.task;
 		
 		const userId = select.value;
@@ -349,9 +420,7 @@ Hózárás előrehaladás
 			return;
 		}
 		
-		await betoltFeladatok();
-
-		frissitProgress();
+		await frissitOldal();
 		
 	}
 	
@@ -365,7 +434,8 @@ Hózárás előrehaladás
 			.from("tasks")
 			.update({
 				status: "megsem",
-				assigned_to: 0
+				assigned_to: 0,
+				status_time: null
 				})
 			.neq("id", 0);
 				
@@ -374,14 +444,16 @@ Hózárás előrehaladás
 				return;
 			}
 		
-		await betoltFeladatok();
-
-		frissitProgress();
+		await frissitOldal();
 		
 	}
 	
-	frissitProgress();
-	betoltFeladatok();
+	async function frissitOldal() {
+		await betoltFeladatok();
+		frissitProgress();
+	}
+
+	frissitOldal().catch(console.error);
 	
 	sb
 		.channel("tasks-changes")
@@ -393,14 +465,10 @@ Hózárás előrehaladás
 				table: "tasks"
 			},
 			async function(payload) {
-				
-				console.log("REaltime megérkezett");
-				
+								
 				console.log("Realtime:", payload);
 				
-				await betoltFeladatok();
-				
-				frissitProgress();
+				await frissitOldal();
 				
 			}
 		)
