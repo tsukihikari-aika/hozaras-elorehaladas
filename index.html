@@ -174,7 +174,9 @@ Hózárás előrehaladás
 	const supabaseUrl = "https://fgqtddzmggjdxlfsvufc.supabase.co";
 	const supabaseKey = "sb_publishable_xf80MZPSOCJXBgGI-qKApA_wx7mLWJi";
 	const sb = window.supabase.createClient(supabaseUrl, supabaseKey);
-
+	
+	let nyitandoTask = null;
+	
 	async function betoltFeladatok() {
 		
 		const {data, error}=await sb
@@ -196,9 +198,6 @@ Hózárás előrehaladás
 			console.error(usersError);
 			return;
 		}
-		
-		console.table(data);
-		console.table(users);
 		
 		const lista = document.getElementById("taskLista");
 		
@@ -243,7 +242,19 @@ Hózárás előrehaladás
 				});
 				
 				lista.appendChild(ujLi);
-		
+				
+				if (task.name === nyitandoTask) {
+					
+					if (typeof select.showPicker === "function") {
+						select.showPicker();
+					} else {
+						select.focus();
+					}
+					
+					nyitandoTask = null;
+					
+				}
+				
 				if (task.status === "folyamatban") {
 						ujLi.classList.add("folyamatban");
 
@@ -267,10 +278,18 @@ Hózárás előrehaladás
 		}
 	
 	async function statusValtas(button, ujStatusz) {
-
+		
+		console.log("statusValtas elindult");
+		
    		const line = button.parentElement;
 
     	const taskName = line.dataset.task;
+		
+		if (ujStatusz !== "megsem") {
+			nyitandoTask = taskName;
+		} else {
+			nyitandoTask = null;
+		}
 		
 		let updateData = {
 			status: ujStatusz
@@ -284,21 +303,25 @@ Hózárás előrehaladás
        		.from("tasks")
 			.update(updateData)
         	.eq("name", taskName);
+		
+		console.log("Update error:", error);
+		console.log("nyitandó:", nyitandoTask);
 
     	if (error) {
         	console.error(error);
         	return;
     	}
+		
+		await betoltFeladatok();
 
-    	await betoltFeladatok();
+		frissitProgress();
 
-    	frissitProgress();
 	}
 	
 	async function felhasznaloValtas(select) {
+			
+		console.log("felhasznaloValtas elindult");
 		
-		console.log("felhasznaloValtas lefutott");
-	
 		const taskName = select.dataset.task;
 		
 		const userId = select.value;
@@ -314,16 +337,10 @@ Hózárás előrehaladás
 		}
 		
 		await betoltFeladatok();
-		
+
 		frissitProgress();
 		
 	}
-	
-	setInterval(function() {
-		
-		betoltFeladatok();
-		frissitProgress();
-		}, 500000);
 	
 	async function visszaallit() {
 		
@@ -345,13 +362,36 @@ Hózárás előrehaladás
 			}
 		
 		await betoltFeladatok();
-		
+
 		frissitProgress();
 		
 	}
 	
 	frissitProgress();
 	betoltFeladatok();
+	
+	sb
+		.channel("tasks-changes")
+		.on(
+			"postgres_changes",
+			{
+				event: "*",
+				schema: "public",
+				table: "tasks"
+			},
+			async function(payload) {
+				
+				console.log("REaltime megérkezett");
+				
+				console.log("Realtime:", payload);
+				
+				await betoltFeladatok();
+				
+				frissitProgress();
+				
+			}
+		)
+		.subscribe();
 	
 </script>
 
