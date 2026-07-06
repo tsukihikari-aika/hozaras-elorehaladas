@@ -181,13 +181,24 @@ Hózárás előrehaladás
 			.from("tasks")
 			.select("*")
 			.order("sort_order");
-			
+		
+		const {data: users, error: usersError}=await sb
+			.from("users")
+			.select("*")
+			.order("id");
+		
 		if (error) {
 			console.error(error);
 			return;
 		}
 		
+		if (usersError) {
+			console.error(usersError);
+			return;
+		}
+		
 		console.table(data);
+		console.table(users);
 		
 		const lista = document.getElementById("taskLista");
 		
@@ -202,9 +213,34 @@ Hózárás előrehaladás
 					<button onclick = "statusValtas(this, 'folyamatban')"> folyamatban </button>
 					<button onclick = "statusValtas(this, 'kesz')"> kész </button>
 					<button onclick = "statusValtas(this, 'megsem')"> mégsem </button>
+					<select class = "userSelect"></select>
 					`;
 				
 				ujLi.dataset.task = task.name;
+				
+				const select = ujLi.querySelector(".userSelect");
+				
+				users.forEach(function(user) {
+					
+					let option = document.createElement ("option");
+					
+					option.value = user.id;
+					
+					option.textContent = user.display_name;
+					
+					select.appendChild(option);
+					
+				});
+				
+				select.value = task.assigned_to;
+				
+				select.dataset.task = task.name;
+				
+				select.addEventListener("change", function () {
+				
+					felhasznaloValtas(select);
+				
+				});
 				
 				lista.appendChild(ujLi);
 		
@@ -235,10 +271,18 @@ Hózárás előrehaladás
    		const line = button.parentElement;
 
     	const taskName = line.dataset.task;
-
+		
+		let updateData = {
+			status: ujStatusz
+		};
+		
+		if (ujStatusz === "megsem") {
+			updateData.assigned_to = 0;
+		}
+		
     	const { error } = await sb
        		.from("tasks")
-			.update({ status: ujStatusz })
+			.update(updateData)
         	.eq("name", taskName);
 
     	if (error) {
@@ -251,11 +295,35 @@ Hózárás előrehaladás
     	frissitProgress();
 	}
 	
+	async function felhasznaloValtas(select) {
+		
+		console.log("felhasznaloValtas lefutott");
+	
+		const taskName = select.dataset.task;
+		
+		const userId = select.value;
+		
+		const { error } = await sb
+       		.from("tasks")
+			.update({ assigned_to: userId })
+        	.eq("name", taskName);
+		
+		if (error) {
+			console.error(error);
+			return;
+		}
+		
+		await betoltFeladatok();
+		
+		frissitProgress();
+		
+	}
+	
 	setInterval(function() {
 		
 		betoltFeladatok();
 		frissitProgress();
-		}, 500);
+		}, 500000);
 	
 	async function visszaallit() {
 		
@@ -265,9 +333,12 @@ Hózárás előrehaladás
 		
 		const { error } = await sb
 			.from("tasks")
-			.update({ status: "megsem" })
+			.update({
+				status: "megsem",
+				assigned_to: 0
+				})
 			.neq("id", 0);
-
+				
 		if (error) {
 				console.error(error);
 				return;
@@ -277,7 +348,7 @@ Hózárás előrehaladás
 		
 		frissitProgress();
 		
-		}
+	}
 	
 	frissitProgress();
 	betoltFeladatok();
