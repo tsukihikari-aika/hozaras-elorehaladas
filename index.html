@@ -14,80 +14,8 @@ Hózárás előrehaladás
 		font-family: Arial;
 		color: #131010;
 		background: #FCE7C8;
-		}
-		
-	.cim {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		font-weight: bold;
-		gap: 15px;
-		}
-	
-	.cim h1 {
-		margin: 0;
-		}
-	
-	.cim-kepek {
-		}
-		
-	.bal-kep {
-		position: absolute;
-		
-		top: 15px;
-		left: 40px;
-		
-		width: 80px;
-		height: 80px;
-		}
-	
-	.jobb-kep {
-		position: absolute;
-		
-		top: 15px;
-		right: 40px;
-		
-		width: 80px;
-		height: 80px;
-		}
-		
-	.toolbar {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		gap: 15px;
-		margin-bottom: 15px;
-		}
-		
-	.progress-container {
-		width: 250px;
-		height: 20px;
-		
-		border: 1px solid #543A14;
-		border-radius: 10px;
-		
-		overflow: hidden;
-		
-		box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-		}
-		
-	#progress-bar {
-		width: 0%;
-		height: 100%;
-		
-		background-color: #B1C29E;
-		
-		transition: width 0.3s;
-		}
-	
-	#last-update {
-		text-align: center;
-		font-size: 13px;
-		color: #131010;
-		margin-top: 4px;
-		margin-bottom: 10px;
 	}
-		
+
 	.container {
 		position: relative;
 		
@@ -102,28 +30,78 @@ Hózárás előrehaladás
 		border-radius: 10px;
 		
 		box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-		}
+	}
+
+	.cim {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-weight: bold;
+		gap: 15px;
+	}
+	
+	.cim h1 {
+		margin: 0;
+	}
+	
+	.cim-kepek {
+	}
 		
-	.folyamatban {
-		background-color: #FADA7A;
-		}
+	.bal-kep {
+		position: absolute;
 		
-	.kesz {
+		top: 15px;
+		left: 40px;
+		
+		width: 80px;
+		height: 80px;
+	}
+	
+	.jobb-kep {
+		position: absolute;
+		
+		top: 15px;
+		right: 40px;
+		
+		width: 80px;
+		height: 80px;
+	}
+		
+	.progress-container {
+		width: 250px;
+		height: 20px;
+		
+		border: 1px solid #543A14;
+		border-radius: 10px;
+		
+		overflow: hidden;
+		
+		box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+	}
+		
+	.toolbar {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 15px;
+		margin-bottom: 15px;
+	}
+		
+	#progress-bar {
+		width: 0%;
+		height: 100%;
+		
 		background-color: #B1C29E;
-		}
 		
-	.megsem {
-		background-color: #FEF9F4;
-		}
+		transition: width 0.3s;
+	}
 	
-	.visszaallitas {
+	#last-update {
 		text-align: center;
-		margin-top: 30px;
-		}
-	
-	.visszaallitas button {
-		font-size: 9px;
+		font-size: 13px;
 		color: #131010;
+		margin-top: 4px;
+		margin-bottom: 10px;
 	}
 
 	li {
@@ -131,33 +109,74 @@ Hózárás előrehaladás
 		padding: 4px;
 		margin: 4px 0;
 		border-radius: 10px;
-		}
-		
+	}
+	
+	.taskRow {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+	
+	.taskTitle {
+		font-weight: bold;
+	}
+	
+	.statusButtons {
+		display: flex;
+		gap: 2px;
+	}
+	
 	button {
-		margin-left: 5px;
 		border: 1px solid #543A14;
 		border-radius: 10px;
 		background-color: #FDEFE2;
 		color: #131010;
 		box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-		}
+	}
+			
+	.folyamatban {
+		background-color: #FADA7A;
+	}
+		
+	.kesz {
+		background-color: #B1C29E;
+	}
+		
+	.megsem {
+		background-color: #FEF9F4;
+	}
+	
+	.separator {
+		margin-left: 8px;
+		margin-right: 6px;
+		color: #131010;
+		font-weight: bold;
+	}
 	
 	select {
-		margin-left: 5px;
 		border: 1px solid #543A14;
 		border-radius: 10px;
 		background-color: #FDEFE2;
 		color: #131010;
 		box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-		}
+	}
 
 	.statusTime {
-		margin-left: 10px;
 		font-size: 10px;
 		color: #131010;
 		font-weight: normal;
 	}
 	
+	.visszaallitas {
+		text-align: center;
+		margin-top: 30px;
+	}
+	
+	.visszaallitas button {
+		font-size: 9px;
+		color: #131010;
+	}
+
 </style>
 
 </head>
@@ -248,19 +267,35 @@ Hózárás előrehaladás
 			const ujLi = document.createElement("li");
 				
 			ujLi.innerHTML = `
-				${task.title}
-				<button onclick = "statusValtas(this, 'folyamatban')"> folyamatban </button>
-				<button onclick = "statusValtas(this, 'kesz')"> kész </button>
-				<button onclick = "statusValtas(this, 'megsem')"> mégsem </button>
-				<select class = "userSelect"></select>
-				<span class= "statusTime"></span>
-				`;
+				<div class="taskRow">
+					<span class="taskTitle">
+						${task.title}
+					</span>
+					
+					<div class="statusButtons">
+						<button onclick = "statusValtas(this, 'folyamatban')"> folyamatban </button>
+						<button onclick = "statusValtas(this, 'kesz')"> kész </button>
+						<button onclick = "statusValtas(this, 'megsem')"> mégsem </button>
+					</div>
+					
+					<select class="userSelect"></select>
+					
+					<span class="statusInfo">
+						<span class="separator"></span>
+						<span class="statusTime"></span>
+					</span>
+				
+				</div>
+				
+			`;
 				
 			ujLi.dataset.task = task.name;
 				
 			const select = ujLi.querySelector(".userSelect");
 
 			const statusTime =ujLi.querySelector(".statusTime");
+			
+			const separator = ujLi.querySelector(".separator");
 				
 			users.forEach(function(user) {
 					
@@ -285,7 +320,11 @@ Hózárás előrehaladás
 			});
 				
 			if (task.status_time) {
+				separator.textContent = "·";
 				statusTime.textContent = formatDatum(task.status_time);
+			} else {
+				separator.textContent = "";
+				statusTime.textContent = "";
 			}
 
 			lista.appendChild(ujLi);
@@ -350,7 +389,7 @@ Hózárás előrehaladás
 		const ora = String(d.getHours()).padStart(2, "0");
 		const perc = String(d.getMinutes()).padStart(2, "0");
 		const masodperc = String(d.getSeconds()).padStart(2, "0");
-
+		
 		return `${ev}.${honap}.${nap}. ${ora}:${perc}:${masodperc}`;
 
 	}
@@ -374,7 +413,7 @@ Hózárás előrehaladás
 	
 	async function statusValtas(button, ujStatusz) {
 				
-   		const taskElement = button.parentElement;
+		const taskElement = button.closest("li");
 
 		const taskName = taskElement.dataset.task;
 		
