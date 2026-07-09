@@ -442,8 +442,6 @@ Hózárás előrehaladás
         	console.error(error);
         	return;
     	}
-		
-		await frissitOldal();
 
 	}
 	
@@ -462,8 +460,6 @@ Hózárás előrehaladás
 			console.error(error);
 			return;
 		}
-		
-		await frissitOldal();
 		
 	}
 	
@@ -487,8 +483,6 @@ Hózárás előrehaladás
 				return;
 			}
 		
-		await frissitOldal();
-		
 	}
 	
 	async function frissitOldal() {
@@ -497,7 +491,7 @@ Hózárás előrehaladás
 	}
 
 	frissitOldal().catch(console.error);
-	
+		
 	sb
 		.channel("tasks-changes")
 		.on(
@@ -515,7 +509,12 @@ Hózárás előrehaladás
 				
 			}
 		)
-		.subscribe();
+		.subscribe((status, err) => {
+			
+			console.log("Realtime státusz:", status);
+			console.log("Realtime hiba:", err);
+			
+		});
 	
 </script>
 
