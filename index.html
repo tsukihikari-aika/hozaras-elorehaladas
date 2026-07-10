@@ -10,10 +10,52 @@ Hózárás előrehaladás
 
 <style>
 
+	:root {
+		
+		--body-bg: #FCE7C8;
+		--container-bg: #FEF9F4;
+		
+		--text: #131010;
+		
+		--border: #543A14;
+		
+		--shadow: rgba(0,0,0,0.15);
+		
+		--button-bg: #FDEFE2;
+		
+		--progress: #B1C29E;
+		
+		--status-folyamatban: #FADA7A;
+		--status-kesz: #B1C29E;
+		--status-megsem: #FEF9F4;
+	
+	}
+
+	body.dark {
+	
+		--body-bg: #2F578A;
+		--container-bg: #121358;
+		
+		--text: #FEF9F4;
+		
+		--border: #2845D6;
+		
+		--shadow: rgba(0,0,0,0.3);
+		
+		--button-bg: #232F72;
+		
+		--progress: #36ADA3;
+		
+		--status-folyamatban: #F68048;
+		--status-kesz: #36ADA3;
+		--status-megsem: #121358;
+	
+	}
+
 	body {
 		font-family: Arial;
-		color: #FEF9F4;
-		background: #2F578A;
+		color: var(--text);
+		background: var(--body-bg);
 	}
 
 	.container {
@@ -25,11 +67,11 @@ Hózárás előrehaladás
 		margin: 20px auto;
 		padding: 20px;
 		
-		background: #121358;
-		border: 1px solid #2845D6;
+		background: var(--container-bg);
+		border: 1px solid var(--border);
 		border-radius: 10px;
 		
-		box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+		box-shadow: 0 2px 8px var(--shadow);
 	}
 
 	.cim {
@@ -66,32 +108,114 @@ Hózárás előrehaladás
 		width: 80px;
 		height: 80px;
 	}
+	
+	.themeSwitcher {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
 		
-	.progress-container {
-		width: 250px;
-		height: 20px;
+		font-size: 11px;
 		
-		border: 1px solid #2845D6;
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	
+	.themeLabel {
+		display: flex;
+		align-items: center;
+		
+		transition: 0.25s;
+		font-weight: normal;
+	}
+	
+	.themeLabel.active {
+		font-weight: bold;
+	}
+	
+	.switch input {
+		display: none;
+	}
+	
+	.switch {
+		position: relative;
+		
+		width: 36px;
+		height: 18px;
+		
+		display: inline-block;
+	}
+	
+	.slider {
+		position: absolute;
+		
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		
+		background: var(--container-bg);
+		
+		border: 1px solid var(--border);
 		border-radius: 10px;
 		
-		overflow: hidden;
+		cursor: pointer;
 		
-		box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+		transition: .30s;
 	}
+	
+	.slider::before {
 		
+		content: "";
+		
+		position: absolute;
+		
+		width: 14px;
+		height: 14px;
+		
+		left: 1px;
+		top: 1px;
+		
+		border-radius: 50%;
+		
+		background: var(--text);
+		
+		transition: .30s;
+		
+	}
+	
+	.switch input:checked + .slider::before {
+		
+		transform: translateX(18px);
+		
+	}
+
 	.toolbar {
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		gap: 15px;
+		margin-top: 20px;
 		margin-bottom: 15px;
+	}
+		
+	.progress-container {
+		width: 250px;
+		height: 20px;
+		
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		
+		overflow: hidden;
+		
+		box-shadow: 0 2px 8px var(--shadow);
 	}
 		
 	#progress-bar {
 		width: 0%;
 		height: 100%;
 		
-		background-color: #36ADA3;
+		background-color: var(--progress);
 		
 		transition: width 0.3s;
 	}
@@ -99,7 +223,7 @@ Hózárás előrehaladás
 	#last-update {
 		text-align: center;
 		font-size: 13px;
-		color: #FEF9F4;
+		color: var(--text);
 		margin-top: 4px;
 		margin-bottom: 10px;
 	}
@@ -127,43 +251,43 @@ Hózárás előrehaladás
 	}
 	
 	button {
-		border: 1px solid #2845D6;
+		border: 1px solid var(--border);
 		border-radius: 10px;
-		background-color: #232F72;
-		color: #FEF9F4;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+		background-color: var(--button-bg);
+		color: var(--text);
+		box-shadow: 0 2px 8px var(--shadow);
 	}
 			
 	.folyamatban {
-		background-color: #F68048;
+		background-color: var(--status-folyamatban);
 	}
 		
 	.kesz {
-		background-color: #36ADA3;
+		background-color: var(--status-kesz);
 	}
 		
 	.megsem {
-		background-color: #121358;
+		background-color: var(--status-megsem);
 	}
 	
 	.separator {
 		margin-left: 8px;
 		margin-right: 6px;
-		color: #FEF9F4;
+		color: var(--text);
 		font-weight: bold;
 	}
 	
 	select {
-		border: 1px solid #2845D6;
+		border: 1px solid var(--border);
 		border-radius: 10px;
-		background-color: #232F72;
-		color: #FEF9F4;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+		background-color: var(--button-bg);
+		color: var(--text);
+		box-shadow: 0 2px 8px var(--shadow);
 	}
 
 	.statusTime {
 		font-size: 10px;
-		color: #FEF9F4;
+		color: var(--text);
 		font-weight: normal;
 	}
 	
@@ -174,7 +298,7 @@ Hózárás előrehaladás
 	
 	.visszaallitas button {
 		font-size: 9px;
-		color: #FEF9F4;
+		color: var(--text);
 	}
 
 </style>
@@ -196,6 +320,28 @@ Hózárás előrehaladás
 		<img src="busy.png" class="bal-kep">
 		
 		<img src="almost-done.png" class="jobb-kep">
+		
+	</div>
+	
+	<div class="themeSwitcher">
+		
+		<span id="lightLabel" class="themeLabel active">
+			☀️ 
+			Világos
+		</span>
+		
+		<label class="switch">
+		
+			<input type="checkbox" id="themeToggle">
+			
+			<span class="slider"></span>
+		
+		</label>
+		
+		<span id="darkLabel" class="themeLabel">
+			Sötét
+			 🌙
+		</span>
 		
 	</div>
 	
@@ -235,6 +381,16 @@ Hózárás előrehaladás
 	const sb = window.supabase.createClient(supabaseUrl, supabaseKey);
 	
 	let nyitandoTask = null;
+	
+	const mentettTema = localStorage.getItem("theme");
+	
+	const themeToggle = document.getElementById("themeToggle");
+	
+	if (mentettTema === "dark") {
+		themeToggle.checked = true;
+	}
+	
+	alkalmazTema();
 	
 	async function betoltFeladatok() {
 		
@@ -515,6 +671,37 @@ Hózárás előrehaladás
 			console.log("Realtime hiba:", err);
 			
 		});
+		
+	function alkalmazTema() {
+	
+		const themeToggle = document.getElementById("themeToggle");
+	
+		const lightLabel = document.getElementById("lightLabel");
+		const darkLabel = document.getElementById("darkLabel");
+	
+		if (themeToggle.checked) {
+			document.body.classList.add("dark");
+			
+			localStorage.setItem("theme", "dark");
+			
+			lightLabel.classList.remove("active");
+			darkLabel.classList.add("active");
+		
+		} else {
+		
+			document.body.classList.remove("dark");
+			
+			localStorage.setItem("theme", "light");
+			
+			darkLabel.classList.remove("active");
+			lightLabel.classList.add("active");
+		
+		}
+			
+	}
+	
+	themeToggle.addEventListener("change", alkalmazTema);
+	
 	
 </script>
 
